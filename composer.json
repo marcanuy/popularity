@@ -1,6 +1,6 @@
 {
     "name": "marcanuy/popularity",
-    "description": "",
+    "description": "A Laravel 4 package for tracking popular elements in a website",
     "authors": [
         {
             "name": "Marcelo Canina",
@@ -13,7 +13,8 @@
     },
     "autoload": {
         "classmap": [
-            "src/migrations"
+            "src/migrations",
+	    "src/models"
         ],
         "psr-0": {
             "Marcanuy\\Popularity\\": "src/"
