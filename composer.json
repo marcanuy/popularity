@@ -1,6 +1,6 @@
 {
     "name": "marcanuy/popularity",
-    "description": "A Laravel 4 package for tracking popular elements in a website",
+    "description": "A Laravel 4 package for tracking popular elements of a website in a time frame",
     "authors": [
         {
             "name": "Marcelo Canina",
