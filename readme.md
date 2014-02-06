@@ -7,8 +7,6 @@ Laravel 4 Popularity Package tracks your most popular Eloquent models based on h
  
 * [Description](#description)
 * [Features](#features)
-* [How does it work](how-does-it-work)
-* [Issues](#issues)
 * [How to install](#how-to-install)
 * [Configuration](#configuration)
 * [Usage](#usage)
@@ -23,15 +21,6 @@ Laravel 4 Popularity Package tracks your most popular Eloquent models based on h
   * Last 30 days
   * All time
 
-## How does it work
-
-It makes use of Eloquent's [polymorphic relations](http://laravel.com/docs/eloquent#polymorphic-relations), so each tracked model has its own stats.
-  
-## Issues
-See [github issue list](https://github.com/marcanuy/Popularity/issues) for current list.
-
------
-
 ## How to install
 ### Setup
 In the `require` key of `composer.json` file add the following
@@ -41,7 +30,6 @@ In the `require` key of `composer.json` file add the following
 Run the Composer update comand
 
     $ composer update
-
 
 In your `config/app.php` add `'Marcanuy\Popularity\PopularityServiceProvider'` to the end of the `$providers` array
 
@@ -70,7 +58,7 @@ Generate the table that will contain hits for each Eloquent model
     
 ## Configuration
 
-For each Eloquent model you want to track you need to implement src/models/PopularityInterface.php contract like this:
+For each Eloquent model you want to track, you need to implement src/models/PopularityInterface.php contract like this:
 
     #e.g. in models/ExamplePost.php
 
@@ -83,28 +71,53 @@ For each Eloquent model you want to track you need to implement src/models/Popul
 
         public function hit()
         {
-            //to do
+            //check if a polymorphic relation can be set
+            if($this->exists){
+                $stats = $this->popularityStats()->first();
+                if( empty( $stats ) ){
+                    //associates a new Stats instance for this instance
+                    $stats = new Stats();
+                    $this->popularityStats()->save($stats);
+                }
+                return $stats->updateStats();
+            }
+                return false;            
+            }
         }
-    }
 
 ## Usage
-### Tracking hits
-Call the Stats::updateStats() method each time you want to increase hits. e.g.
 
-    $stats = new Stats();
-    $stats->updateStats();
-    $post->popularityStats()->save($stats);
-    $stats->updateStats();
+It makes use of Eloquent's [polymorphic relations](http://laravel.com/docs/eloquent#polymorphic-relations), so each tracked model has its own stats.
+
+### Tracking hits
+For each model instance that has already been saved into the db (or already has an id), call hit() method to increase count for each time frame, e.g. in routes.php each time a post or an article is viewed, or an Eloquent event is fired.
+
+    Route::get('post/{id}', function($id)
+    {
+        $post = ExamplePost::find($id);
+        **$post->hit();**
+        ...
+    }
 
 ### Retrieving most popular elements
-There are defined the following query scopes in \Marcanuy/Popularity/Stats
+By default it register the route **popularity**, **popularity/day**, etc, where you can see an example of its usage. It is based on the following views that can be easily modified.
 
-    orderByOneDayStats
-    orderBySevenDaysStats
-    orderByThirtyDaysStats
-    orderByAllTimeStats
+    //copy package views into your app
+    php artisan view:publish marcanuy/popularity
+
+You can include this views as subviews or adapt them to your project needs
+
+    app/views/packages/marcanuy/popularity/item_list.blade.php
+    app/views/packages/marcanuy/popularity/widget.blade.php
     
------
+Then use them like
+
+    $items = Popularity::getStats('one_day_stats', 'DESC', '\Marcanuy\Popularity\ExamplePost')->paginate();
+    View::make('popularity::item_list')->with(array('items' => $items));
+
+    $topItems = Popularity::getStats('one_day_stats', 'DESC', '', 3)->get();
+    View::make('popularity::widget')->with(array('topItems' => $topItems));
+    
 ## License
 
 This is free software distributed under the terms of the MIT license
@@ -113,4 +126,4 @@ This is free software distributed under the terms of the MIT license
 
 Inspired by and based on [WP-Most-Popular](https://github.com/MattGeri/WP-Most-Popular)
 
-Any questions, feel free to [contact me](http://twitter.com/marcanuy).
+Any questions, post an [issue](https://github.com/marcanuy/Popularity/issues) or feel free to [contact me](http://twitter.com/marcanuy).
