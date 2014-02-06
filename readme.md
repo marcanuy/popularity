@@ -14,12 +14,12 @@ Laravel 4 Popularity Package tracks your most popular Eloquent models based on h
 
 ## Features
 
-* Tracks Eloquent models
 * Tracked date ranges
   * Last day
   * Last 7 days
   * Last 30 days
   * All time
+* Can track different models at the same time, and select from which model to show its popular items
 
 ## How to install
 ### Setup
@@ -95,7 +95,7 @@ For each model instance that has already been saved into the db (or already has 
     Route::get('post/{id}', function($id)
     {
         $post = ExamplePost::find($id);
-        **$post->hit();**
+        $post->hit();
         ...
     }
 
