@@ -14,8 +14,9 @@ class CreatePopularityStatsTable extends Migration {
 	{
 		Schema::create('popularity_stats', function(Blueprint $table)
 		{
-			$table->increments('id');
-            $table->morphs('trackable');
+			$table->bigIncrements('id');
+            $table->bigInteger('trackable_id')->unsigned();
+            $table->string('trackable_type');
             $table->integer('one_day_stats')->default(0);
             $table->integer('seven_days_stats')->default(0);
             $table->integer('thirty_days_stats')->default(0);
