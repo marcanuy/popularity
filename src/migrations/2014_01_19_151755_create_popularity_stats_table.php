@@ -21,7 +21,7 @@ class CreatePopularityStatsTable extends Migration {
             $table->integer('seven_days_stats')->default(0);
             $table->integer('thirty_days_stats')->default(0);
             $table->integer('all_time_stats')->default(0);
-            $table->string('raw_stats')->default('');
+            $table->string('raw_stats',1000)->default('');
 			$table->timestamps();
 		});
 	}
